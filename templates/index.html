@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+	<title>SmartGarden App</title>
+	<!-- bootstrap -->
+	<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-beta.3/css/bootstrap.min.css"
+		integrity="sha384-Zug+QiDoJOrZ5t4lssLdxGhVrurbmBWopoEl+M6BdEfwnCJZtKxi1KgxUyJq13dy" crossorigin="anonymous">
+	<!-- fontawesome -->
+	<link rel="stylesheet" type="text/css"
+		href="https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css">
+	<!-- weather icons -->
+	<link rel="stylesheet" type="text/css"
+		href="https://cdnjs.cloudflare.com/ajax/libs/weather-icons/2.0.9/css/weather-icons.min.css">
+	<!-- stylesheet -->
+	<link rel="stylesheet" href="{{url_for('static', filename='css/style.css')}}">
+
+</head>
+
+<body>
+	<div class="hero">
+		<!-- navbar -->
+		<nav class="navbar">
+			<a class="navbar-brand" href="#">
+				<i class="fa fa-sun-o" aria-hidden="true"></i>
+				<strong>Smart</strong>Garden
+			</a>
+			<span id="date" class="lead">11:00AM | Mar 3, 2018</span>
+		</nav>
+		<!-- weather section  -->
+		<div class="container">
+			<div class="row">
+				<div id="" class="col-10 mx-auto weather">
+					<!-- weather header section -->
+					<div class="weather-head">
+						<h1 id="location" class="text-center display-4">Қызылтөбе лицейі</h1>
+						<div class="row">
+							<div id="humidity" class="col-6 text-center">
+								75 <i id="icon-humidity" class="wi wi-humidity"></i>
+							</div>
+							<div id="temperature" class="col-6 text-center">
+								60 <i id="icon-thermometer" class="wi wi-thermometer"></i>
+							</div>
+						</div>
+						<!-- weather body header -->
+						<div class="weather-body">
+							<div class="row">
+								<div class="wind col-6 text-center">
+									<span>Humadity</span>
+								</div>
+								<div class="visibility col-6 text-center">
+									<span>Temperature</span>
+								</div>
+							</div>
+							<!-- weather body data -->
+							<div class="row">
+								<div id="water-pump" class="col-12 text-center">
+									<label class="switch">
+										<input type="checkbox" id="water-pump-checkbox">
+										<span class="slider round"></span>
+									</label>
+								</div>
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+		<footer>
+			<p>Created by <a href="http://google.com/" title="Visit Portfolio Site" target="_blank">Turkpenbayev B</a> |
+				Greenhouse control </p>
+		</footer>
+	</div>
+	<!-- javascript file -->
+	<script src="{{ url_for('static', filename='js/jquery-1.11.1.min.js') }}"></script>
+	<script>
+		//variables
+		var m = new Date();
+		var dateString =
+			("0" + m.getUTCDate()).slice(-2) + "." +
+			("0" + (m.getUTCMonth() + 1)).slice(-2) + "." +
+			m.getUTCFullYear()
+
+		//setting the date
+		var dateElem = document.getElementById("date");
+		dateElem.innerHTML = dateString
+
+		//checkbox woter-pump
+		const checkbox = document.getElementById('water-pump-checkbox')
+		const humidity = document.getElementById('humidity')
+		const temperature = document.getElementById('temperature')
+
+		checkbox.addEventListener('change', (event) => {
+			if (event.target.checked) {
+				waterPump(event.target.checked)
+			} else {
+				waterPump(event.target.checked)
+			}
+		})
+
+
+		setInterval(function () {
+			$.ajax({
+				url: '/update',
+				type: 'GET',
+				success: function (data) {
+					console.log(data['temperature'], data['humidity'])
+					humidity.innerHTML = data['humidity'] + ' <i id="icon-humidity" class="wi wi-humidity"></i>'
+					temperature.innerHTML = data['temperature'] + '<i id="icon-thermometer" class="wi wi-thermometer"></i>'
+					
+				}
+			});
+		}, 6000);
+
+		function waterPump(status) {
+			$.ajax({
+				url: '/watering',
+				type: 'GET',
+				data: {
+					'status': status
+				},
+				success: function (data) {
+					console.log(data['watering_status'], 'adasdas')
+				}
+			});
+		}
+
+	</script>
+
+</body>
+
+</html>
